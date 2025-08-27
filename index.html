@@ -2,38 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pi Test Login</title>
+  <title>Pi Login Token</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
-  <h1>Test Pi Login</h1>
+  <h1>Pi Login - Lấy Access Token</h1>
   <button id="loginBtn">Login with Pi</button>
-
   <pre id="log"></pre>
 
   <script>
-    // Hàm log ra màn hình
+    const logEl = document.getElementById("log");
     function log(msg) {
-      const el = document.getElementById("log");
-      el.textContent += msg + "\n";
+      logEl.textContent += msg + "\n";
       console.log(msg);
     }
 
-    // Khởi tạo SDK
-    Pi.init({ version: "2.0", sandbox: false }); // Để sandbox:true khi app chưa duyệt
+    // Production mode, không sandbox
+    Pi.init({ version: "2.0", sandbox: true });
 
-    // Gắn sự kiện click nút login
     document.getElementById("loginBtn").addEventListener("click", async () => {
-      log("Bắt đầu login...");
+      log("🔄 Bắt đầu login...");
       try {
-        const scopes = ['username']; // có thể thêm 'payments' nếu cần
-        const user = await Pi.authenticate(scopes, (payment) => {
-          log("Incomplete payment: " + JSON.stringify(payment));
-        });
-        log("Đăng nhập thành công:");
+        // Chỉ yêu cầu username
+        const scopes = ['username'];
+        const user = await Pi.authenticate(scopes);
+        log("✅ Đăng nhập thành công:");
         log(JSON.stringify(user, null, 2));
+
+        // Access token sẽ nằm trong user.accessToken
+        if (user.accessToken) {
+          log("🔑 Access Token:");
+          log(user.accessToken);
+          alert("Copy Access Token từ console hoặc log trên trang");
+        } else {
+          log("⚠️ Không tìm thấy access token");
+        }
+
       } catch (err) {
-        log("Lỗi login: " + err);
+        log("❌ Lỗi login: " + err);
       }
     });
   </script>
