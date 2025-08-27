@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pi Test Login</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body>
+  <h1>Test Pi Login</h1>
+  <button id="loginBtn">Login with Pi</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    // Hàm log ra màn hình
+    function log(msg) {
+      const el = document.getElementById("log");
+      el.textContent += msg + "\n";
+      console.log(msg);
+    }
+
+    // Khởi tạo SDK
+    Pi.init({ version: "2.0", sandbox: false }); // Để sandbox:true khi app chưa duyệt
+
+    // Gắn sự kiện click nút login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      log("Bắt đầu login...");
+      try {
+        const scopes = ['username']; // có thể thêm 'payments' nếu cần
+        const user = await Pi.authenticate(scopes, (payment) => {
+          log("Incomplete payment: " + JSON.stringify(payment));
+        });
+        log("Đăng nhập thành công:");
+        log(JSON.stringify(user, null, 2));
+      } catch (err) {
+        log("Lỗi login: " + err);
+      }
+    });
+  </script>
+</body>
+</html>
